@@ -1,3 +1,42 @@
+# This script demonstrates basic descriptive statistics on numeric data,
+# including central tendency (mean, mode, median, quantiles),
+# dispersion measures (range, variance, standard deviation, IQR, coefficient 
+# of variation), and skewness to assess data asymmetry.
+
+# It starts by analyzing a sample numeric vector `x`,
+# then applies similar central tendency calculations to all numeric columns 
+# of the built-in `mtcars` dataset.
+
+# The code also illustrates the concept of kurtosis by generating three 
+# sample distributions:
+# mesokurtic (normal), leptokurtic (heavy-tailed), and platykurtic 
+# (light-tailed), calculating and interpreting their kurtosis, excess kurtosis,
+# and skewness, and visualizing them with histograms.
+
+# Finally, it begins working on grouped data to manually calculate grouped 
+# mean and median as an example of descriptive statistics for grouped 
+# frequency distributions.
+
+
+# *****************************************************
+# INTERPRETATION OF SKEWNESS:
+# Skewness measures the asymmetry of the distribution.
+# - If skewness > 0: distribution is right-skewed (positive asymmetry)
+#   => tail is longer on the right side.
+# - If skewness < 0: distribution is left-skewed (negative asymmetry)
+#   => tail is longer on the left side.
+# - If skewness ≈ 0: distribution is approximately symmetric.
+
+# *****************************************************
+# INTERPRETATION OF KURTOSIS:
+# Kurtosis measures the "tailedness" or peakedness of the distribution.
+# - Kurtosis = 3 (Excess kurtosis = 0): Mesokurtic distribution
+#   => similar to normal distribution, moderate tails and peak.
+# - Kurtosis > 3 (Excess kurtosis > 0): Leptokurtic distribution
+#   => sharper peak and heavier tails (more outliers).
+# - Kurtosis < 3 (Excess kurtosis < 0): Platykurtic distribution
+#   => flatter peak and lighter tails (less extreme outliers).
+
 x <- c(3, 7, 5, 9, 12, 7, 5, 6, 4, 10)
 
 # *****************************************************
@@ -127,6 +166,11 @@ leptokurtic <- rt(1000, df = 3)
 # We use a uniform distribution
 platykurtic <- runif(1000, min = -2, max = 2)
 
+# Calculate the sknewness of each distribution:
+snewness_meso <- skewness(mesokurtic)   # tends to zero, symmetric
+snewness_lepto <- skewness(leptokurtic) # symmetric, very slightly right-skewed
+snewness_platy <- skewness(platykurtic) # almost zero, symmetric
+
 # Calculate kurtosis for each type
 kurt_meso <- kurtosis(mesokurtic)
 kurt_lepto <- kurtosis(leptokurtic)
@@ -187,3 +231,114 @@ hist(platykurtic, main = "Platikúrtica\n(Uniforme)",
 par(mfrow = c(1, 1))  # Restore layout
 
 # *****************************************************
+# Activities (assignments)
+# Given the following grouped data:
+grouped_data <- data.frame(
+  interval_min = seq(50, 160, by = 10),
+  interval_max = seq(60, 170, by = 10),
+  freq = c(1, 3, 6, 7, 56, 12, 10, 8, 6, 4, 2, 1)
+)
+
+
+# 1) With the grouped data, calculate the mean, the median and the modal class.
+  # I will do the calculations "manually" first, step by step, later on using
+  # built-in R functions
+  # add the calculated xi (to get the mean) column to the data frame
+grouped_data$xi <- with(grouped_data, 
+                        grouped_data$interval_min + (grouped_data$interval_max 
+                        - grouped_data$interval_min) / 2)
+
+grouped_data$fi_xi <- with(grouped_data, grouped_data$freq * grouped_data$xi)
+
+  # Grouped mean calculation *****************
+grouped_mean <- sum(grouped_data$fi_xi) / sum(grouped_data$freq)
+cat("gropued mean: ", grouped_mean)
+
+  # Grouped median ***************************
+  # we need the accumulated frequency as a column (F)
+grouped_data$F <- with(grouped_data, cumsum(grouped_data$freq))
+  
+  # Total frequency
+N <- sum(grouped_data$freq)
+  
+  # Find the median class: where cumulative frequency >= N/2
+median_class_index <- which(grouped_data$F >= N/2)[1]
+  
+  # Get components of the formula
+L <- grouped_data$interval_min[median_class_index]
+F_prev <- if (median_class_index == 1) 0 else grouped_data$F[median_class_index - 1]
+f_m <- grouped_data$freq[median_class_index]
+h <- grouped_data$interval_max[median_class_index] - grouped_data$interval_min[median_class_index]
+
+  # Apply the formula
+grouped_median <- L + ((N/2 - F_prev) / f_m) * h
+
+cat("Grouped median:", grouped_median)
+
+  # Modal class*********************************
+  # Find index of the modal class
+modal_class_index <- which.max(grouped_data$freq)
+  
+  # Get the modal class interval
+modal_class <- grouped_data[modal_class_index, c("interval_min", "interval_max")]
+
+cat("Modal class interval: [", modal_class$interval_min, ", ", modal_class$interval_max, "]\n")
+
+# 2) Determine the interquartile range and the interdecile range.
+  # IQR ****************************************
+  # Total frequency
+N <- sum(grouped_data$freq)
+  
+  # Class width (assuming uniform width)
+h <- grouped_data$interval_max[1] - grouped_data$interval_min[1]
+
+  # Q1 --------------------------------
+Q1_index <- which(grouped_data$F >= N/4)[1]
+L1 <- grouped_data$interval_min[Q1_index]
+F1 <- if (Q1_index == 1) 0 else grouped_data$F[Q1_index - 1]
+f1 <- grouped_data$freq[Q1_index]
+Q1 <- L1 + ((N/4 - F1) / f1) * h
+  
+  # Q3 --------------------------------
+Q3_index <- which(grouped_data$F >= 3*N/4)[1]
+L3 <- grouped_data$interval_min[Q3_index]
+F3 <- if (Q3_index == 1) 0 else grouped_data$F[Q3_index - 1]
+f3 <- grouped_data$freq[Q3_index]
+Q3 <- L3 + ((3*N/4 - F3) / f3) * h
+
+  # IQR
+IQR_grouped <- Q3 - Q1
+
+  # Output
+cat("Q1:", Q1, "\n")
+cat("Q3:", Q3, "\n")
+cat("Grouped IQR:", IQR_grouped, "\n")
+
+# 3) Calculate the variance and the standard deviation.
+# 4) Calculate the coefficients of skewness and kurtosis.
+  # Skewness **********************************
+  # Pearson skewness. I'll use an approximation to the data or will die old here
+approx_data <- rep(grouped_data$xi, grouped_data$freq)
+
+  # Calculate mean, median, standard deviation and skewness
+mean_est <- mean(approx_data)
+var_est <- var(approx_data)
+median_est <- median(approx_data)
+sd_est <- sd(approx_data)
+skew_est <- skewness(approx_data)
+kurt_est <- kurtosis(approx_data)
+
+  # Results
+cat("Grouped mean (est.):", mean_est, "\n")
+cat("Grouped variance (est.):", var_est, "\n")
+cat("Grouped median (est.):", median_est, "\n")
+cat("Grouped standard deviation (est.):", sd_est, "\n")
+cat("Skewness (est.):", skew_est, "\n")
+cat("Kurtosis (est.):", kurt_est, "\n")
+
+hist(approx_data)
+
+# Interpretation: as confirmed by the histogram and the skewness value,
+# the distribution is approximately symmetric with a slight positive skew.
+# The kurtosis excess of 0.88 indicates a leptokurtic distribution,
+# meaning it has a sharper peak and heavier tails than a normal distribution.
