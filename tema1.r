@@ -106,39 +106,39 @@ quantile_gear <- quantile(mtcars$gear, 0.25)
 quantile_carb <- quantile(mtcars$carb, 0.25)
 
 # *****************************************************
-# Tipus de Kurtosis en R
-# Necessitem el paquet moments per calcular kurtosis
+# Kurtosis types
+# We need to load this library to calculate kurtosis
 library(moments)
 
 # Generar dades per mostrar els 3 tipus de kurtosis
 set.seed(123)  # Per resultats reproduïbles
 
 # 1. MESOKÚRTICA (kurtosis ≈ 3, excess kurtosis ≈ 0)
-# Distribució normal - referència estàndard
+# Normal distribution
 mesokurtic <- rnorm(1000, mean = 0, sd = 1)
 
 # 2. LEPTOKÚRTICA (kurtosis > 3, excess kurtosis > 0)
 # Distribució amb cues més pesades - més punxaguda al centre
-# Usem distribució t amb pocs graus de llibertat
+# We use a T distribution with little degrees of freedom
 leptokurtic <- rt(1000, df = 3)
 
 # 3. PLATIKÚRTICA (kurtosis < 3, excess kurtosis < 0)
 # Distribució amb cues més lleugeres - més plana
-# Usem distribució uniforme
+# We use a uniform distribution
 platykurtic <- runif(1000, min = -2, max = 2)
 
-# Calcular kurtosis per cada tipus
+# Calculate kurtosis for each type
 kurt_meso <- kurtosis(mesokurtic)
 kurt_lepto <- kurtosis(leptokurtic)
 kurt_platy <- kurtosis(platykurtic)
 
-# Calcular excess kurtosis (kurtosis - 3)
+# Calculate excess of Kurtosis (kurtosis - 3)
 excess_meso <- kurt_meso - 3
 excess_lepto <- kurt_lepto - 3
 excess_platy <- kurt_platy - 3
 
-# Mostrar resultats
-cat("=== TIPUS DE KURTOSIS ===\n\n")
+# Show the results
+cat("=== TYPES OF KURTOSIS ===\n\n")
 
 cat("1. MESOKÚRTICA (Normal):\n")
 cat("   Kurtosis:", round(kurt_meso, 3), "\n")
@@ -155,7 +155,7 @@ cat("   Kurtosis:", round(kurt_platy, 3), "\n")
 cat("   Excess Kurtosis:", round(excess_platy, 3), "\n")
 cat("   Interpretació: Més plana, cues més lleugeres\n\n")
 
-# Estadístiques descriptives per comparar
+# Descriptive statistics
 cat("=== COMPARACIÓ ESTADÍSTIQUES ===\n")
 cat("\nMesokúrtica (Normal):\n")
 cat("Mean:", round(mean(mesokurtic), 3), "| SD:", round(sd(mesokurtic), 3), "\n")
@@ -166,13 +166,13 @@ cat("Mean:", round(mean(leptokurtic), 3), "| SD:", round(sd(leptokurtic), 3), "\
 cat("\nPlatikúrtica (Uniforme):\n")
 cat("Mean:", round(mean(platykurtic), 3), "| SD:", round(sd(platykurtic), 3), "\n")
 
-# Regles d'interpretació
-cat("\n=== REGLES D'INTERPRETACIÓ ===\n")
+# Interpretation rules
+cat("\n=== INTERPRETATION RULES ===\n")
 cat("• Kurtosis = 3 (Excess = 0): Mesokúrtica\n")
 cat("• Kurtosis > 3 (Excess > 0): Leptokúrtica\n")
 cat("• Kurtosis < 3 (Excess < 0): Platikúrtica\n")
 
-# Visualitzar amb histogrames (opcional)
+# Visualize through histograms
 par(mfrow = c(1, 3))
 
 hist(mesokurtic, main = "Mesokúrtica\n(Normal)", 
@@ -184,4 +184,6 @@ hist(leptokurtic, main = "Leptokúrtica\n(t-distribution)",
 hist(platykurtic, main = "Platikúrtica\n(Uniforme)", 
      xlab = "Valors", col = "lightgreen", breaks = 30)
 
-par(mfrow = c(1, 1))  # Restaurar layout
+par(mfrow = c(1, 1))  # Restore layout
+
+# *****************************************************
