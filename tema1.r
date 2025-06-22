@@ -342,3 +342,29 @@ hist(approx_data)
 # the distribution is approximately symmetric with a slight positive skew.
 # The kurtosis excess of 0.88 indicates a leptokurtic distribution,
 # meaning it has a sharper peak and heavier tails than a normal distribution.
+
+
+# *****************************************************
+# Problem: how to describe and resume a data set to understand its main
+# characteristics? Assume we have the following data: 2, 5, 9, 3, 7, 1, 8
+
+# We put the data in a proper dataframe
+data_problem <- c(2, 5, 9, 3, 7, 1, 8)
+
+# Central tendency statistics:
+# mean, median, mode, percentiles
+data_problem_mean <- mean(data_problem)
+data_problem_median <- median(data_problem)
+library(DescTools)
+data_problem_mode <- Mode(data_problem) # there is no mode
+data_problem_p25 <- quantile(data_problem, 0.25)
+data_problem_p50 <- quantile(data_problem, 0.50)
+data_problem_p74 <- quantile(data_problem, 0.75)
+data_problem_IQR <- IQR(data_problem)
+
+# dispersion statistics (variance, standard deviation)
+data_problem_variance <- var(data_problem)
+data_problem_std <- sd(data_problem)
+
+# visualization: distribution (histogram)
+hist(data_problem, breaks = 0:10)
