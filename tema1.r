@@ -351,6 +351,8 @@ hist(approx_data)
 # We put the data in a proper dataframe
 data_problem <- c(2, 5, 9, 3, 7, 1, 8)
 
+summary(data_problem_IQR)
+
 # Central tendency statistics:
 # mean, median, mode, percentiles
 data_problem_mean <- mean(data_problem)
@@ -359,12 +361,65 @@ library(DescTools)
 data_problem_mode <- Mode(data_problem) # there is no mode
 data_problem_p25 <- quantile(data_problem, 0.25)
 data_problem_p50 <- quantile(data_problem, 0.50)
-data_problem_p74 <- quantile(data_problem, 0.75)
+data_problem_p75 <- quantile(data_problem, 0.75)
 data_problem_IQR <- IQR(data_problem)
 
 # dispersion statistics (variance, standard deviation)
+data_problem_range <- range(data_problem)
 data_problem_variance <- var(data_problem)
 data_problem_std <- sd(data_problem)
 
 # visualization: distribution (histogram)
 hist(data_problem, breaks = 0:10)
+
+# Histogram with normal curve test ************************************
+# We add a normal curve with x <- mtcars$mpg
+h<-hist(x, breaks=10,  
+        xlab="Miles Per Gallon", main="Histogram with Normal Curve")
+xfit<-seq(min(x),max(x),length=40) 
+yfit<-dnorm(xfit,mean=mean(x),sd=sd(x)) 
+yfit <- yfit*diff(h$mids[1:2])*length(x) # fix frequency vs density
+lines(xfit, yfit, lwd=2)
+
+# The same with GGPlot
+library(ggplot2)
+ggplot(data.frame(x), aes(x)) +
+  geom_histogram(aes(y = ..density..), bins = 10) +
+  stat_function(fun = dnorm, args = list(mean = mean(x), sd = sd(x)), 
+                 size = 1)
+
+# Boxplot example ******************************************************
+# Boxplot of MPG by Car Cylinders 
+boxplot(mpg~cyl,data=mtcars, main="Car Milage Data", 
+        xlab="Number of Cylinders", ylab="Miles Per Gallon")
+
+# Simple scatter plot example ******************************************
+plot(mtcars$wt, mtcars$mpg, main="Scatterplot Example", 
+     xlab="Car Weight", ylab="Miles Per Gallon", pch=19)
+
+# High Density Scatterplot with Binning ********************************
+library(hexbin) 
+x <- rnorm(1000) 
+y <- rnorm(1000)
+bin<-hexbin(x, y, xbins=30) 
+plot(bin, main="Hexagonal Binning")
+
+
+# 3D Scatterplot 
+library(scatterplot3d) 
+scatterplot3d(mtcars$wt,mtcars$disp,mtcars$mpg, main="3D Scatterplot")
+
+# Dotplot: Grouped Sorted and Colored 
+# Sort by mpg, group and color by cylinder 
+x <- mtcars[order(mtcars$mpg),] # sort by mpg 
+x$cyl <- factor(x$cyl) # (convert from numeric to categorical)
+x$color[x$cyl==4] <- "red"
+x$color[x$cyl==6] <- "blue" 
+x$color[x$cyl==8] <- "darkgreen" 
+dotchart(x$mpg,labels=row.names(x),cex=.7,groups= x$cyl, 
+         main="Gas Milage for Car Models\ngrouped by cylinder", 
+         xlab="Miles Per Gallon", gcolor="black", color=x$color)
+
+
+# Assignments
+# ************
