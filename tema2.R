@@ -124,4 +124,143 @@ barplot(counts, main="Car Distribution by Gears and VS", xlab="Number of Gears",
 legend = rownames(counts), beside=TRUE) 
 barplot(counts, main="Car Distribution by Gears and VS", xlab="Number of Gears", col=c("darkblue","red"),
 legend = rownames(counts))
-                                                                                                             main="Pie Chart of Countries ")
+
+# Assignments
+# ***********************************************************************
+# 1) In this example, the average time in minutes is collected for any given day
+# that men and women dedicate to household tasks. Could you represent this data
+# in a bar chart, drawing different bars for men and women?
+
+# create a data frame
+df_ass1 <- data.frame(
+  task = c("Childcare", "Kitchen", "Grocery", "Cleaning", "Ironing"),
+  male = c(30, 25, 15, 10, 10),
+  female = c(70, 80, 40, 90, 45)
+)
+df_ass1$task <- factor(df_ass1$task)
+
+# check it looks good
+print(df_ass1)
+
+# use the sexiest library for charts on eaRth
+library(tidyr)
+df_long <- pivot_longer(df_ass1, cols = c(male, female), 
+                        names_to = "gender", values_to = "time")
+
+# Stacked bar chart
+ggplot(df_long, aes(x = task, y = time, fill = gender)) +
+  geom_col(position = position_dodge()) +
+  scale_fill_manual(values = c("male" = "#d4d64f", "female" = "#4f47bf")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+# 2 ) The number of errors that a factory sensor has experienced over the course 
+# of a month has been: 2, 1, 5, 3, 4, 1, 0, 1, 2, 3, 4, 3, 4, 0, 2, 4, 3, 
+# 5, 6, 1, 2, 3, 4, 3, 2, 4, 1, 3, 4, 3.
+
+# Graphically represent the frequency histogram of the number of errors.
+
+# put the data in a vector
+ds_errors <- c(2, 1, 5, 3, 4, 1, 0, 1, 2, 3, 4, 3, 4, 0, 2, 4, 3, 5, 6, 1, 
+            2, 3, 4, 3, 2, 4, 1, 3, 4, 3)
+
+# show built in histogram. quick and easy
+hist(ds_errors)
+
+# just for the sake of learning... I will make it using ggplot as well
+df_long <- data.frame(errors = ds_errors)
+
+ggplot(df_long, aes(x = errors)) +
+  geom_histogram(binwidth = 1, fill = "lightblue", color = "black") +
+  labs(title = "Frequency histogram of number of errors",
+       x = "number of errors",
+       y = "frequency")  +
+  scale_x_continuous(breaks = 0:6)
+
+# 3) given the data set, draw a pie chart with the distribution
+# create a vector
+sports_vector <- c(soccer = 20, basket = 15, cycling = 12, swimming = 10, 
+                   others = 3)
+# Simple pie chart
+pie(sports_vector)
+
+# for the sake of learning, let's use ggplot now
+# unfortunately we need a data frame for this purpose:
+df_sports <- data.frame(
+  sport = names(sports_vector),
+  count = as.numeric(sports_vector)
+)
+
+# strike! (ugly as hell, but still...)
+ggplot(df_sports, aes(x = "", y = count, fill = sport)) +
+  geom_col() +
+  coord_polar(theta = "y") +
+  theme_void()
+
+
+# 3) A library has received the following phone calls over a determined period: 
+# 8, 5, 9, 2, 0, 11, 13, 8, 9, 14, 3, 1, 16, 4, 8, 9, 11, 5, 2, 19, 9, 13,
+# 17, 10, 4, 0, 3, 7, 18, 6.
+
+# Create a distribution table with absolute and cumulative frequencies,
+# grouping the data in intervals with amplitude 5 and indicating the class mark
+
+# Represent the distribution of absolute frequencies through a histogram.
+ass_3_values <- c(8, 5, 9, 2, 0, 11, 13, 8, 9, 14, 3, 1, 16, 4, 8, 9, 11, 5, 
+                  2, 19, 9, 13, 17, 10, 4, 0, 3, 7, 18, 6)
+
+n <- length(ass_3_values)
+num_intervals <- round(sqrt(n))
+amplitude <- 5
+
+breaks_manual <- seq(from = min(ass_3_values), 
+                     to = max(ass_3_values) + 0.001, 
+                     by = amplitude)
+
+intervals <- cut(ass_3_values, breaks = breaks_manual, 
+                 right = FALSE, include.lowest = TRUE)
+
+# Create a beautiful frequency table
+freq_table_intervals <- as.data.frame(table(intervals))
+
+# Give the columns good names
+names(freq_table_intervals) <- c("xi", "fi")
+
+# Add accumulated frequency column
+freq_table_intervals$Fi <- cumsum(freq_table_intervals$fi)
+
+# Add relative frequency column (hi or fr)
+freq_table_intervals$hi <- freq_table_intervals$fi/sum(freq_table_intervals$fi)
+
+# Add accumulated relative frequency column (Hi)
+freq_table_intervals$Hi <- cumsum(freq_table_intervals$hi)
+
+# Show histogram
+hist(xi, breaks = length(xi))
+
+# Show ft
+print(freq_table_intervals)
+
+# Extra, more on frequency tables ****************************************
+# Frequency tables are important... so let's get more practice on the topic
+
+data_vector <- c(3, 3, 8, 9, 3, 1, 3, 5, 4, 6, 6, 3, 2, 9, 8, 9, 7, 7, 7, 7)
+
+absolute_freq <- table(data_vector)        # get absolute frequency
+relative_freq <- prop.table(absolute_freq) # get relative frequency
+print(data_table)
+
+# combine into a data frame
+frequency_table <- data.frame(
+  value = as.numeric(names(absolute_freq)),
+  absolute = as.vector(absolute_freq),
+  relative = as.vector(relative_freq)
+)
+print(frequency_table)
+
+# histogram
+hist(data_vector)
+
+# with Ggplot
+ggplot(frequency_table, aes(x = value, y = absolute)) +
+  geom_col()
