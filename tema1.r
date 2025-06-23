@@ -419,7 +419,3 @@ x$color[x$cyl==8] <- "darkgreen"
 dotchart(x$mpg,labels=row.names(x),cex=.7,groups= x$cyl, 
          main="Gas Milage for Car Models\ngrouped by cylinder", 
          xlab="Miles Per Gallon", gcolor="black", color=x$color)
-
-
-# Assignments
-# ************
