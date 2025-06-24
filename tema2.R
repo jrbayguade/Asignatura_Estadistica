@@ -248,7 +248,6 @@ data_vector <- c(3, 3, 8, 9, 3, 1, 3, 5, 4, 6, 6, 3, 2, 9, 8, 9, 7, 7, 7, 7)
 
 absolute_freq <- table(data_vector)        # get absolute frequency
 relative_freq <- prop.table(absolute_freq) # get relative frequency
-print(data_table)
 
 # combine into a data frame
 frequency_table <- data.frame(
@@ -264,3 +263,161 @@ hist(data_vector)
 # with Ggplot
 ggplot(frequency_table, aes(x = value, y = absolute)) +
   geom_col()
+
+
+# Exercises  *************************************************************
+# 1) Consider the following data set containing information about sex, age, 
+# height, score and grade of 20 students:
+
+# a) Create an absolute frequency table and a relative frequency table for 
+# the variable Grade. Store the previous tables in two variables and call 
+# them absolutes and relatives.
+
+estudiantes <- data.frame(
+  Sex = c("Mujer", "Hombre", "Mujer", "Mujer", "Mujer", "Hombre", "Mujer", 
+           "Hombre", "Hombre", "Mujer", "Mujer", "Hombre", "Hombre", "Mujer", 
+           "Mujer", "Hombre", "Mujer", "Mujer", "Mujer", "Mujer"),
+  Age = c(21, 19, 18, 20, 23, 22, 22, 20, 21, 21, 22, 20, 22, 19, 19, 21, 
+           20, 21, 22, 23),
+  Height = c(1.82, 1.83, 1.78, 1.79, 1.80, 1.90, 1.79, 1.83, NA, 1.65, 
+               1.73, 1.79, 1.80, 1.77, 1.69, 1.75, 1.66, NA, 1.79, 1.80),
+  Score = c(5, 6, 7, 5, 9, 7, 8, 3, 9, 2, 5, 8, 7, 6, 3, 4, 5, 6, 2, 8),
+  Grade = c("Aprobado", "Aprobado", "Notable", "Aprobado", "Sobresaliente",
+                   "Notable", "Notable", "Suspenso", "Sobresaliente", "Suspenso",
+                   "Aprobado", "Notable", "Notable", "Aprobado", "Suspenso",
+                   "Suspenso", "Aprobado", "Aprobado", "Suspenso", "Notable")
+)
+
+absolutes <- table(estudiantes$Grade)
+relatives <- prop.table(absolutes)
+
+# b) Represent the Grade variable using a bar chart and a pie chart. 
+# Include an appropriate title for each graph and color the bars and 
+# sectors with different colors.
+
+desired_order <- c("Suspenso", "Aprobado", "Notable", "Sobresaliente")
+
+barplot(absolutes[desired_order], 
+        col=c("red", "darkgreen", "green", "lightgreen"),
+        main = "Grade",
+        cex.names = 0.8)
+
+pie(absolutes[desired_order],
+    col=c("red", "darkgreen", "green", "lightgreen"),
+    main = "Grade",
+    cex.names = 0.8)
+
+# c) For the Age variable, create a histogram and a box plot considering 
+# the option range = 1.5. Include an appropriate title for each graph and 
+# color the histogram bars yellow. Is there any outlier in this variable? 
+# Reduce the range argument value to 0.5. Do the conclusions vary?
+
+hist(estudiantes$Age, main = "Student's age histogram", col = "yellow",
+     xlab = "Ages", ylab ="Frequency")
+boxplot(estudiantes$Age, main = "Student's age boxplot", range = 1.5)
+boxplot(estudiantes$Age, main = "Student's age boxplot", range = 0.5)
+
+#  -> the range controls the reach of the whiskers, anything further away
+#     is considered an outlier
+
+# d) Create a summary of the Score variable using the summary command. Verify 
+# that the measures provided by summary match the measures calculated 
+# individually using their specific function.
+
+summary(estudiantes$Score)
+score_min <- min(estudiantes$Score)
+score_max <- max(estudiantes$Score)
+score_q25 <- quantile(estudiantes$Score, 0.25)
+score_med <- quantile(estudiantes$Score, 0.5)
+score_q75 <- quantile(estudiantes$Score, 0.75)
+score_mean <- mean(estudiantes$Score)
+
+
+# Problems given by the teacher through the class ************************
+# ************************************************************************
+# Communicate information from a dataset visually. Is it possible?
+
+# We will analyze the R mtcars dataset by doing a Basic Descriptive Summary
+
+# Mean: Average value of each variable.
+# Median: Value that divides the data into two equal parts.
+# Standard deviation: Measure of data dispersion with respect to the mean.
+# Minimum/Maximum: Extreme values of the variables.
+
+# Let's see if we can communicate the information that this dataset provides 
+# to us visually.
+
+head(mtcars)
+
+# Summarize the data
+summary(mtcars)
+
+# Wider description of the data thanks to psych
+library(psych)
+describe(mtcars)
+
+# Correlation matrix
+cor(mtcars)
+
+# Correlation matrix on a heat map 
+library(corrplot)
+corrplot(cor(mtcars), 
+         method="color", 
+         title ="Correlation matrix",
+         number.cex = 0.7,
+         addCoef.col = "black")
+
+library(ggplot2)
+
+# boxplot showing HP distribution by number of cylinders
+ggplot(data = mtcars, mapping = aes(x = factor(cyl), y = hp)) +
+  geom_boxplot(outlier.color = "red")
+
+# Distribution of disp (whatever disp means)
+ggplot(data = mtcars, mapping = aes(x = disp)) + 
+  geom_histogram()
+
+# Scatter plot showing negative correlation between mpg (miles per gallon) 
+# and wt (weight).We could see -0.87 in the correlation matrix btween the vars
+ggplot(data = mtcars, mapping = aes(x = mpg, y = wt)) +
+  geom_point() +
+  stat_smooth(method = lm)
+
+# show a bar chart of number of cars per cylinder type
+ggplot(data = mtcars, mapping = aes(x = cyl)) +
+  geom_bar()
+
+# probability density plot along with the histogram in HP
+ggplot(data = mtcars, mapping = aes(x = hp)) +
+  geom_histogram(bins=10, aes(y = after_stat(density))) +
+  geom_density(colour = "blue", size = 2) 
+
+
+
+# Simple Pareto Analysis Example in R ****************************************
+# Sample data: defect types and their frequencies
+defects <- c("A" = 50, "B" = 30, "C" = 15, "D" = 5)
+
+# Sort in descending order
+defects_sorted <- sort(defects, decreasing = TRUE)
+
+# Calculate cumulative percentages
+cumulative_freq <- cumsum(defects_sorted)
+cumulative_pct <- cumulative_freq / sum(defects_sorted) * 100
+
+df_defects <- data.frame(
+  category = names(defects_sorted),
+  frequency = as.numeric(defects_sorted),
+  cumulative_freq,
+  cumulative_pct
+)
+
+# Pareto chart using GGPlot ********************************************
+library(ggplot2)
+ggplot(data = df_defects, mapping = aes(x = category, y = frequency)) +
+  geom_col() +
+  geom_line(mapping = aes(x = category, y = cumulative_pct), group = 1, 
+            colour = "red", size = 3) +
+  xlab("Category") +
+  ylab("Frequency")
+  
