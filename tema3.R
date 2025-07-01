@@ -175,3 +175,64 @@ hist(Z,freq=FALSE,col="lightsalmon",main=titulo,sub="Histograma de la variable n
 summary(Z) 
 describe(Z)
   
+
+# *******************************************************************************
+#----------------------------------------
+# Cuaderno actividades T4
+#----------------------------------------
+
+# Ejercicio 1
+#
+# Sea X una variable aleatoria que toma los valores 30, 40, 50 y 60 con
+# probabilidades 0,4; 0,2; 0,1 y 0,3.
+#
+# Se pide: representar la tabla con la función de probabilidad,
+# P(X = x) = P(xi) = Pi y la función de distribución de probabilidad,
+# F(X) = P(X≤x), y calcular las siguientes probabilidades:
+#
+# P(X≤25), P(X≥60), P(X < 40), P(30≤X≤60), P(30 < X≤60)
+#
+# Calcular también la esperanza y varianza de X.
+
+# Crear directamente el data frame con los datos del problema
+xi <- c(30, 40, 50, 60)
+pi <- c(0.4, 0.2, 0.1, 0.3)
+
+# Crear tabla de función de probabilidad
+df <- data.frame(xi = xi, pi = pi)
+
+# Función de distribución (probabilidades acumuladas)
+df$Fi <- cumsum(df$pi)
+
+# Verificar que las probabilidades suman 1
+sum(df$pi)
+
+df
+
+# P(X≤25)
+sum(df$pi[df$xi <= 25])
+
+# P(X≥60)
+sum(df$pi[df$xi >= 60])
+
+# P(X < 40)
+sum(df$pi[df$xi < 40])
+
+# P(X > 40)
+sum(df$pi[df$xi > 40])
+
+# P(30≤X≤60)
+sum(df$pi[df$xi >= 30 & df$xi <= 60])
+
+# P(30 < X≤60)
+sum(df$pi[df$xi > 30 & df$xi <= 60])
+
+# Esperanza E(X) = Σ xi * pi
+esperanza <- sum(df$xi * df$pi)
+esperanza
+
+# Varianza Var(X) = E(X²) - [E(X)]²
+# Primero calculamos E(X²)
+esperanza_x2 <- sum(df$xi^2 * df$pi)
+varianza <- esperanza_x2 - esperanza^2
+varianza
