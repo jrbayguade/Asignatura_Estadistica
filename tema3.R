@@ -174,9 +174,86 @@ describe(Y)
 hist(Z,freq=FALSE,col="lightsalmon",main=titulo,sub="Histograma de la variable normalizada")
 summary(Z) 
 describe(Z)
-  
 
-# *******************************************************************************
+# ******************************************************************************
+#-----------------------------------------------------------------------------
+# Vizualització concepte de variables aleatories, funció de probabilitat, 
+# funció de densitat i funció de distribució acumulada
+#-----------------------------------------------------------------------------
+# Variable Contínua: Distribució Normal  
+# Explicació:
+#   dnorm: Calcula la PDF (densitat) en cada punt.
+#   pnorm: Calcula la CDF (probabilitat acumulada fins a x).
+#   Probabilitat P(0≤X≤1)=F(1)−F(0).
+
+# Configuració
+set.seed(123)
+x <- seq(-4, 4, length.out = 1000)
+mu <- 0    # Mitjana
+sigma <- 1 # Desviació estàndard
+
+# PDF (Densitat)
+pdf_normal <- dnorm(x, mean = mu, sd = sigma)
+
+# CDF (Distribució acumulada)
+cdf_normal <- pnorm(x, mean = mu, sd = sigma)
+
+# Probabilitat P(0 ≤ X ≤ 1)
+prob <- pnorm(1, mean = mu, sd = sigma) - pnorm(0, mean = mu, sd = sigma)
+cat("P(0 ≤ X ≤ 1) =", prob, "\n")  # Resultat: ~0.3413
+
+# Gràfics
+par(mfrow = c(1, 2))
+plot(x, pdf_normal, type = "l", col = "blue", main = "PDF (Normal)", xlab = "x", ylab = "Densitat")
+abline(v = c(0, 1), col = "red", lty = 2)
+plot(x, cdf_normal, type = "l", col = "green", main = "CDF (Normal)", xlab = "x", ylab = "Probabilitat acumulada")
+abline(v = c(0, 1), col = "red", lty = 2)
+
+# &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+# Variable discreta: Distribució binomial
+# Explicació:
+#   dbinom: Calcula la PMF (probabilitat exacta per a cada k).
+#   pbinom: Calcula la CDF (probabilitat acumulada).
+#   Probabilitat:P(3≤X≤5) = F(5) − F(2) = F(5) − F(2)
+
+# Configuració
+n <- 10   # Nombre d'intents
+p <- 0.5  # Probabilitat d'èxit
+k <- 0:n  # Valors possibles
+
+# PMF (Probabilitats puntuals)
+pmf_binom <- dbinom(k, size = n, prob = p)
+
+# CDF (Probabilitat acumulada)
+cdf_binom <- pbinom(k, size = n, prob = p)
+
+# Probabilitat P(3 ≤ X ≤ 5)
+prob <- pbinom(5, size = n, prob = p) - pbinom(2, size = n, prob = p)
+cat("P(3 ≤ X ≤ 5) =", prob, "\n")  # Resultat: ~0.568
+
+# Gràfics
+par(mfrow = c(1, 2))
+plot(k, pmf_binom, type = "h", lwd = 2, col = "purple", main = "PMF (Binomial)", xlab = "k", ylab = "P(X = k)")
+points(k, pmf_binom, col = "purple", pch = 16)
+plot(k, cdf_binom, type = "s", col = "orange", main = "CDF (Binomial)", xlab = "k", ylab = "P(X ≤ k)")
+abline(v = c(3, 5), col = "red", lty = 2)
+
+# &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+# Comparació gràfica
+
+# Torna a configurar els gràfics
+par(mfrow = c(2, 2))
+
+# Normal: PDF i CDF
+plot(x, pdf_normal, type = "l", col = "blue", main = "PDF (Normal)")
+plot(x, cdf_normal, type = "l", col = "green", main = "CDF (Normal)")
+
+# Binomial: PMF i CDF
+plot(k, pmf_binom, type = "h", lwd = 2, col = "purple", main = "PMF (Binomial)")
+points(k, pmf_binom, col = "purple", pch = 16)
+plot(k, cdf_binom, type = "s", col = "orange", main = "CDF (Binomial)")
+
+# ******************************************************************************
 #----------------------------------------
 # Cuaderno actividades T4
 #----------------------------------------
@@ -194,7 +271,7 @@ describe(Z)
 #
 # Calcular también la esperanza y varianza de X.
 
-# Crear directamente el data frame con los datos del problema
+# Crear vectores con los datos del problema
 xi <- c(30, 40, 50, 60)
 pi <- c(0.4, 0.2, 0.1, 0.3)
 
@@ -224,7 +301,7 @@ sum(df$pi[df$xi > 40])
 # P(30≤X≤60)
 sum(df$pi[df$xi >= 30 & df$xi <= 60])
 
-# P(30 < X≤60)
+# P(30 < X≤ 60)
 sum(df$pi[df$xi > 30 & df$xi <= 60])
 
 # Esperanza E(X) = Σ xi * pi
@@ -236,3 +313,85 @@ esperanza
 esperanza_x2 <- sum(df$xi^2 * df$pi)
 varianza <- esperanza_x2 - esperanza^2
 varianza
+
+
+# Ejercicio 2
+#
+# Sea X una variable aleatoria, cuya función de probabilidad está determinada
+# por: X = 10, 12, 14, 15, 17, 20 y P(X) = 0,1; 0,3; 0,25; 0,14; 0,06; 0,15.
+#
+# Calcular la esperanza y varianza de la variable aleatoria X.
+#
+# Calcular la función de distribución de probabilidad y determinar los valores
+# de: F(33), F(14,5), F(3), P(10,5 < X≤17,5).
+
+# Creamos vectores con los datos del problema
+xi <- c(10, 12, 14, 15, 17, 20)
+pi <- c(0.1, 0.3, 0.25, 0.14, 0.06, 0.15)
+
+# Crear tabla de función de probabilidad
+df <- data.frame(xi = xi, pi = pi)
+
+# Añadir distribución acumulada
+df$Fi <- cumsum(df$pi)
+
+# Visualizamos data frame
+df
+
+# Verificar que las probabilidades suman 1
+sum(df$pi)
+
+# F(33) = F(X<=33)
+sum(df$pi[df$xi<=33])
+
+# F(14.5) = F(X<=14.5)
+sum(df$pi[df$xi<=14.5])
+
+# F(3) = F(X<=3)
+sum(df$pi[df$xi<=3])
+
+# P(10.5 < X≤17.5)
+sum(df$pi[df$xi>10.5 & df$xi<=17.5])
+
+# Esperanza E(X) = Σ xi * pi
+esperanza <- sum(df$xi * df$pi)
+esperanza
+
+# Varianza Var(X) = E(X²) - [E(X)]²
+# Primero calculamos E(X²)
+esperanza_x2 <- sum(df$xi^2 * df$pi)
+varianza <- esperanza_x2 - esperanza^2
+varianza
+
+
+# Ejercicio 3
+#
+# Las ventas mensuales realizadas por un periódico (en miles) siguen un modelo
+# normal de media 200 y desviación típica 40. Calcular:
+#
+# - La probabilidad de que las ventas de un mes sean superiores a 300.
+# - La probabilidad de que las ventas de un mes se encuentren entre 160 y 240.
+# - La probabilidad de que las ventas de un mes no superen 150.
+# - La probabilidad de que las ventas de un mes superen 3000.
+
+# En esta ocasión estamos ante una distribución contínua *****
+
+# Parámetros de la distribución N(200, 40)
+media <- 200
+sd <- 40
+
+# P(X > 300)
+prob1 <- 1 - pnorm(300, mean = media, sd = sd)
+prob1
+
+# P(160 ≤ X ≤ 240)  
+prob2 <- pnorm(240, mean = media, sd = sd) - pnorm(160, mean = media, sd = sd)
+prob2
+
+# P(X ≤ 150)
+prob3 <- pnorm(150, mean = media, sd = sd)
+prob3
+
+# P(X > 3000)
+prob4 <- 1 - pnorm(3000, mean = media, sd = sd)
+prob4
